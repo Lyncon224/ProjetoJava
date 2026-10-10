@@ -3,6 +3,7 @@ package com.fatec.itu.product.controllers;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,87 +15,55 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.fatec.itu.product.entities.Client;
+import com.fatec.itu.product.dtos.ClientRequest;
+import com.fatec.itu.product.dtos.ClientResponse;
 import com.fatec.itu.product.services.ClientService;
 
-
-
 @RestController
-@RequestMapping("/client")
+@RequestMapping({"/clients", "/client"})
 public class ClientController {
-    private final ClientService service ;
 
-    //injeção do serviço 
-    ClientController(ClientService service){
-        this.service = service;
-    }
+    @Autowired
+    private ClientService service;
 
-    //exposição por id 1- end point 
-    @GetMapping("{id}")
-    public ResponseEntity<Client> getById (@PathVariable long id){
-        return ResponseEntity.ok(service.findById(id));
-    }
-
-    //retornar tudo 
+    // Retorna todos os clientes
     @GetMapping
-    public ResponseEntity<List<Client>> getAll() {
+    public ResponseEntity<List<ClientResponse>> getAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
-    
+    // Retorna cliente por ID
+    @GetMapping("{id}")
+    public ResponseEntity<ClientResponse> getById(@PathVariable long id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
 
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //mapeado como delete
-        //delete mapeando por id
-        @DeleteMapping("{id}")
+    // Deleta cliente por ID
+    @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteById(@PathVariable long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
+    // Cadastra cliente
+    @PostMapping
+    public ResponseEntity<ClientResponse> save(@RequestBody ClientRequest client) {
+        ClientResponse c = service.save(client);
 
-    //metodo post, passa um produto na requisição
-     @PostMapping
-    public ResponseEntity<Client> save(@RequestBody Client client)
-    {
-        Client c = service.save(client);
-       
-        //localização do cliente
         URI location = ServletUriComponentsBuilder
                        .fromCurrentRequest()
                        .path("/{id}")
-                       .buildAndExpand(c.getId())
+                       .buildAndExpand(c.id())
                        .toUri();
-        
+
         return ResponseEntity.created(location).body(c);
-                            //status code 201
-
     }
 
+    // Atualiza cliente por ID
     @PutMapping("{id}")
-    
     public ResponseEntity<Void> update(@PathVariable long id,
-    @RequestBody Client client)
-    {
-    service.update(client, id);
-    return ResponseEntity.noContent().build();
+                                       @RequestBody ClientRequest client) {
+        service.update(client, id);
+        return ResponseEntity.noContent().build();
     }
-
-    
 }
