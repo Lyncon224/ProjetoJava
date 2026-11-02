@@ -7,11 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+// @Entity: mapeia esta classe como uma entidade gerenciada pelo JPA/Hibernate
 @Entity
+// @Table: especifica que os dados serão gravados na tabela TBL_CLIENT no banco H2
 @Table(name="TBL_CLIENT")
 public class Client implements java.io.Serializable  {
     
- @Id
+    // @Id e @GeneratedValue: definem a chave primária gerada automaticamente pelo banco (auto-incremento)
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
@@ -19,6 +22,7 @@ public class Client implements java.io.Serializable  {
     private int idade;
     private double altura;
     
+    // Getters e Setters para encapsulamento dos atributos da entidade
      public Long getId() {
         return id;
     }
@@ -51,6 +55,7 @@ public class Client implements java.io.Serializable  {
         this.idade = idade;
     }
 
+    // equals: compara dois objetos Client utilizando o ID como critério de igualdade
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
